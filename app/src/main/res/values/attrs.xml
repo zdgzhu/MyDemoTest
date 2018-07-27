@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- 声明了一个属性集合-->
+
+<declare-styleable name="CircleView">
+
+    <attr name="circle_color" format="color" />
+
+</declare-styleable>
+</resources>

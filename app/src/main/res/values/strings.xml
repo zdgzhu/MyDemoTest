@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">MyDemoTest</string>
+
+
+    <!-- MainActivity-->
+    <string name="btn_main_act01">CustomActivity</string>
+    <string name="btn_main_act02">AnimationActivity</string>
+
+    <!-- Animation -->
+    <string name="btn_animation_frame_start">帧动画开始</string>
+    <string name="btn_animation_frame_stop">帧动画结束</string>
+
+
+
+</resources>
