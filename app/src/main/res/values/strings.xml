@@ -9,6 +9,14 @@
     <!-- Animation -->
     <string name="btn_animation_frame_start">帧动画开始</string>
     <string name="btn_animation_frame_stop">帧动画结束</string>
+    <string name="btn_animation_alpha">淡入淡出</string>
+    <string name="btn_animation_set">组合动画</string>
+    <string name="btn_animator_property">属性动画</string>
+    <string name="btn_animator_property_alpha">淡入淡出</string>
+    <string name="btn_animator_property_rotation">旋转</string>
+    <string name="btn_animator_property_scale">缩放</string>
+    <string name="btn_animator_property_translation">位移</string>
+    <string name="btn_animator_property_set">组合动画</string>
 
 
 

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?><!--  组合动画-->
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shareInterpolator="true"
+
+    >
+
+    <alpha
+        android:fromAlpha="1.0"
+        android:toAlpha="0.0"
+        android:duration="5000"
+        ></alpha>
+
+    <!--<scale-->
+        <!--android:fromXScale="0dp"-->
+        <!--android:fromYScale="0dp"-->
+        <!--android:toXScale="0dp"-->
+        <!--android:toYScale="0dp"-->
+        <!--android:duration="5000"-->
+        <!--&gt;</scale>-->
+
+    <translate
+        android:fromXDelta="0"
+        android:fromYDelta="200"
+        android:toXDelta="0"
+        android:toYDelta="200"
+        android:duration="5000"
+        />
+
+    <rotate
+        android:fromDegrees="0"
+        android:toDegrees="180"
+        android:pivotX="50%p"
+        android:pivotY="50%p"
+        android:duration="5000"
+        />
+
+
+</set>
