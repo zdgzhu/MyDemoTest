@@ -1,7 +1,9 @@
-package com.mydemotest;
+package com.mydemotest.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.mydemotest.R;
 
 public class CustomUIActivity extends AppCompatActivity {
 
