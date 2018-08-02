@@ -52,8 +52,8 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                 startToAct(AnimationButtonActivity.class);
                 break;
 
-            case R.id.btn04:
-
+            case R.id.btn04://使用带动画的view
+                startToAct(AnimationViewActivity.class);
                 break;
 
             case R.id.btn05:

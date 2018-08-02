@@ -1,16 +1,26 @@
 package com.mydemotest.UI;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.DashPathEffect;
 import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.PathEffect;
+import android.graphics.PathMeasure;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AnimationSet;
 
 public class AnimationButton extends View {
 
@@ -75,10 +85,51 @@ public class AnimationButton extends View {
     private Rect textRect = new Rect();
 
     /**
+     * 路径：用来获取对勾的路径
+     */
+    private Path path = new Path();
+    /**
+     * 取路径的长度
+     */
+    PathMeasure pathMeasure;
+    /**
+     * 对路径处理，实现绘制效果
+     */
+    private PathEffect effect;
+
+    /**
+     * 动画集
+     */
+    private AnimatorSet animatorSet = new AnimatorSet();
+
+    /**
      * 矩形到圆角过度的动画
      */
     private ValueAnimator animator_rect_to_angle;
+    /**
+     * 圆角矩形过度到圆的动画
+     */
+    private ValueAnimator animator_rect_to_square;
 
+    /**
+     * view 上移动画
+     */
+    private ValueAnimator animator_move_to_up;
+
+    /**
+     * 绘制对勾√
+     */
+    private ValueAnimator animator_draw_ok;
+    /**
+     * 是否开始绘制对勾
+     */
+    private boolean startDrawOk = false;
+
+
+    /**
+     * view 上移的距离
+     */
+    private float move_distance = 300;
 
     /**
      * 根据view的大小设置成矩形
@@ -117,6 +168,32 @@ public class AnimationButton extends View {
             }
         });
 
+        this.animatorSet.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                super.onAnimationCancel(animation);
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                if (animationButtonListener != null) {
+                    animationButtonListener.animationFinish();
+                }
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+                super.onAnimationRepeat(animation);
+            }
+
+            @Override
+            public void onAnimationStart(Animator animation) {
+                super.onAnimationStart(animation);
+            }
+        });
+
+
     }
 
 
@@ -137,6 +214,7 @@ public class AnimationButton extends View {
         okPaint.setStyle(Paint.Style.STROKE);
         okPaint.setAntiAlias(true);
         okPaint.setColor(Color.WHITE);
+//        okPaint.setColor(Color.RED);
 
     }
 
@@ -148,7 +226,8 @@ public class AnimationButton extends View {
         Log.e(TAG, "onSizeChanged: " );
         width = w;
         height = h;
-
+        default_two_circle_distance = (w-h) / 2;
+        initOk();
         initAnimation();
     }
 
@@ -158,6 +237,11 @@ public class AnimationButton extends View {
         Log.e(TAG, "onDraw: " );
         draw_oval_to_circle(canvas);
 
+        drawText(canvas);//绘制文字
+        if (startDrawOk) {
+            canvas.drawPath(path, okPaint);
+        }
+
     }
 
     /**
@@ -165,6 +249,14 @@ public class AnimationButton extends View {
      */
     private void initAnimation() {
         set_rect_to_angle_animation();
+        set_rect_to_circl_animation();
+        set_move_to_up_animation();
+        set_draw_ok_animation();
+
+        animatorSet.play(animator_move_to_up)
+                .before(animator_draw_ok)
+                .after(animator_rect_to_square)
+                .after(animator_rect_to_angle);
 
     }
 
@@ -185,18 +277,38 @@ public class AnimationButton extends View {
     }
 
     /**
+     * 设置圆角矩形过度到圆的动画
+     */
+    private void set_rect_to_circl_animation() {
+        animator_rect_to_square = ValueAnimator.ofInt(0, default_two_circle_distance);
+        animator_rect_to_square.setDuration(duration);
+        animator_rect_to_square.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                two_circle_distance = (int) valueAnimator.getAnimatedValue();
+                int alpha = 255 - (two_circle_distance * 255) / default_two_circle_distance;
+                textPaint.setAlpha(alpha);
+                invalidate();
+            }
+        });
+
+
+    }
+
+
+
+    /**
      * 绘制文字
      */
     private void drawText(Canvas canvas) {
         textRect.left = 0;
         textRect.top = 0;
         textRect.right = width;
-        textRect.bottom = width;
+        textRect.bottom = height;
         Paint.FontMetricsInt fontMetricsInt = textPaint.getFontMetricsInt();
-
-
-
-
+        int baseline = (textRect.bottom + textRect.top - fontMetricsInt.bottom - fontMetricsInt.top) / 2;
+        //绘制文字到整个布局的中心 位置
+        canvas.drawText(buttonString, textRect.centerX(), baseline, textPaint);
     }
 
 
@@ -222,11 +334,70 @@ public class AnimationButton extends View {
     }
 
     /**
+     * 设置view上移的动画
+     */
+    private void set_move_to_up_animation() {
+        final float curTranslationY = this.getTranslationY();
+        animator_move_to_up = ObjectAnimator.ofFloat(this, "translationY", curTranslationY, curTranslationY - move_distance);
+        animator_move_to_up.setDuration(duration);
+        animator_move_to_up.setInterpolator(new AccelerateDecelerateInterpolator());
+    }
+
+    /**
+     * 绘制对勾的动画
+     */
+    private void set_draw_ok_animation() {
+        animator_draw_ok = ValueAnimator.ofFloat(1, 0);
+        animator_draw_ok.setDuration(duration);
+
+        animator_draw_ok.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                startDrawOk = true;
+                float value = (Float) animation.getAnimatedValue();
+
+                effect = new DashPathEffect(new float[]{pathMeasure.getLength(), pathMeasure.getLength()}, value * pathMeasure.getLength());
+                okPaint.setPathEffect(effect);
+                invalidate();
+            }
+        });
+
+    }
+
+    /**
+     * 绘制对勾
+     */
+    private void initOk() {
+        //对勾的路径
+        path.moveTo(default_two_circle_distance + height / 8 * 3, height / 2);
+        path.lineTo(default_two_circle_distance + height / 2, height / 5 * 3);
+        path.lineTo(default_two_circle_distance + height / 3 * 2, height / 5 * 2);
+        pathMeasure = new PathMeasure(path, true);
+
+    }
+
+
+    /**
      * 启动动画
      */
     public void  start() {
-        animator_rect_to_angle.start();
+        animatorSet.start();
     }
+
+    /**
+     * 动画还原
+     */
+    public void reset() {
+        startDrawOk = false;
+        circleAngle = 0;
+        two_circle_distance = 0;
+        default_two_circle_distance = (width - height) / 2;
+        textPaint.setAlpha(255);
+        setTranslationY(getTranslationY() + move_distance);
+        invalidate();
+
+    }
+
 
     /**
      * 接口回调

@@ -6,7 +6,7 @@
     <string name="btn_main_act01">CustomActivity</string>
     <string name="btn_main_act02">AnimationActivity</string>
     <string name="btn_main_act03">按钮自定义动画</string>
-    <string name="btn_main_act04">AnimationActivity</string>
+    <string name="btn_main_act04">使用带动画的view</string>
     <string name="btn_main_act05">AnimationActivity</string>
     <string name="btn_main_act06">AnimationActivity</string>
     <string name="btn_main_act07">AnimationActivity</string>

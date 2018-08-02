@@ -18,7 +18,8 @@
         </activity>
         <activity android:name=".activity.CustomUIActivity" />
         <activity android:name=".activity.AnimationActivity" />
-        <activity android:name=".activity.AnimationButtonActivity"></activity>
+        <activity android:name=".activity.AnimationButtonActivity" />
+        <activity android:name=".activity.AnimationViewActivity"></activity>
     </application>
 
 </manifest>
